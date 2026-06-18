@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,400;0,700;1,700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-decatactive-500: #fd4a3f;
+  --color-newdecat-50: #f1f4fd;
+  --color-newdecat-100: #e0e7f9;
+  --color-newdecat-200: #c8d4f5;
+  --color-newdecat-300: #a2b9ee;
+  --color-newdecat-400: #7694e4;
+  --color-newdecat-500: #5671db;
+  --color-newdecat-600: #4156cf;
+  --color-newdecat-700: #3743bb;
+  --color-newdecat-800: #33399a;
+  --color-newdecat-900: #2d347b;
+  --color-newdecat-950: #20234b;
+
+  --color-decatactive-50: #fff2f1;
+  --color-decatactive-100: #ffe2e0;
+  --color-decatactive-200: #ffc9c6;
+  --color-decatactive-300: #ffa49e;
+  --color-decatactive-400: #ff6f66;
+  --color-decatactive-500: #fd4a3f;
+  --color-decatactive-600: #eb2317;
+  --color-decatactive-700: #c61a0f;
+  --color-decatactive-800: #a31911;
+  --color-decatactive-900: #871c15;
+  --color-decatactive-950: #4a0905;
+
+  --color-stat-pok: #3743bb; 
+  --color-stat-dzs: #0077d0;
+  --color-stat-ser: #0097af;
+  --color-stat-hos: #3cae89;
+  --color-stat-bgr: #cccccc;
+
+  --font-roboto: "Roboto", sans-serif;
+  --font-roboto-condensed: "Roboto Condensed", "sans-serif";
+}
+
+@layer components {
+  .embla {
+      overflow: hidden;
+    }
+  
+    .embla__container {
+      display: flex;
+    }
+  
+    .embla__slide {
+      flex: 0 0 100%;
+      min-width: 0;
+    }
+  
+  }

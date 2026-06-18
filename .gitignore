@@ -1,0 +1,11 @@
+# activecounter
+
+# dependencies
+/node_modules
+
+# parcel
+/.parcel-cache
+
+# apps-script
+/apps-script
+!/apps-script/appsscript.json
