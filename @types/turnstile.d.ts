@@ -8,6 +8,7 @@ declare global {
           appearance?: "always" | "execute" | "interaction-only";
           
           sitekey: string;
+          action?: string;
           callback?: (token: string) => void;
           "expired-callback"?: () => void;
           "error-callback"?: () => void;

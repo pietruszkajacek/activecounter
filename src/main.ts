@@ -26,6 +26,16 @@ import type { StoreIdb } from "@/interfaces/store-idb";
 const currentDate = new Date();
 const currentMonth = currentDate.getMonth();
 const currentYear = currentDate.getFullYear();
+const turnstileSecretKeyProperty = "TURNSTILE_SECRET_KEY";
+const expectedTurnstileAction = "sync-data";
+
+type TurnstileVerifyResponse = {
+  success: boolean;
+  action?: string;
+  "error-codes"?: string[];
+  challenge_ts?: string;
+  hostname?: string;
+};
 
 function getActiveUserEmail() : string {
   const email = Session.getActiveUser().getEmail();
@@ -184,7 +194,54 @@ function finalizingUploadAccountsRequest(req: string, store: StoreIdb, consolida
   saveAccountsWithDuplicateChecking(req, store, consolidation, "###");
 }
 
-function saveLocalAccounts(req: string, store: StoreIdb, consolidation: Consolidation) {
+function verifyTurnstileToken(turnstileToken: string) {
+  if (!turnstileToken) {
+    throw new Error("Missing Turnstile token.");
+  }
+
+  const secret = PropertiesService
+    .getScriptProperties()
+    .getProperty(turnstileSecretKeyProperty);
+
+  if (!secret) {
+    throw new Error("Missing Turnstile secret key.");
+  }
+
+  const response = UrlFetchApp.fetch(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    {
+      method: "post",
+      payload: {
+        secret,
+        response: turnstileToken,
+      },
+      muteHttpExceptions: true,
+    }
+  );
+
+  const responseCode = response.getResponseCode();
+  const responseText = response.getContentText();
+  Logger.log(`Turnstile verification raw response: ${responseText}`);
+
+  const result = JSON.parse(responseText) as TurnstileVerifyResponse;
+  Logger.log(
+    `Turnstile verification response: HTTP ${responseCode}, success: ${result.success}, errors: ${(result["error-codes"] ?? []).join(", ")}`
+  );
+
+  if (!result.success) {
+    throw new Error(
+      `Turnstile verification failed: HTTP ${responseCode}, ${(result["error-codes"] ?? []).join(", ")}`
+    );
+  }
+
+  if (result.action !== expectedTurnstileAction) {
+    throw new Error(`Unexpected Turnstile action: ${result.action ?? ""}`);
+  }
+}
+
+function saveLocalAccounts(req: string, store: StoreIdb, consolidation: Consolidation, turnstileToken: string) {
+  verifyTurnstileToken(turnstileToken);
+
   saveAccountsWithDuplicateChecking(req, store, consolidation);
   
   // return getIndividualStatsData(Session.getActiveUser().getEmail(), currentMonth, currentYear, store);

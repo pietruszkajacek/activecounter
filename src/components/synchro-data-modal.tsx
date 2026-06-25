@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import Spinner from "./spinner";
 import GroupsRadioBtn from "./groups-radio-btn";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import useContextAndErrorIfNull from "../hooks/useContextAndErrorIfNull";
 import { InitDataContext } from "./init-data-provider";
 import { Consolidation } from "@/interfaces/consolidation";
@@ -14,7 +14,7 @@ type Props = {
   sendingData: boolean;
   sendDataOK: boolean | null;
   closeModal: () => void;
-  handleBtnSend: () => void;
+  handleBtnSend: (turnstileToken: string) => void;
 };
 
 export default function SynchroDataModal({
@@ -26,7 +26,7 @@ export default function SynchroDataModal({
 }: Props) {
   const { initData, setInitData } = useContextAndErrorIfNull(InitDataContext);
   const [widgetId, setWidgetId] = useState<string>();
-  let [turnstileToken, setTurnstileToken] = useState<string>();
+  const [turnstileToken, setTurnstileToken] = useState<string>();
 
   
   const [selectedConsolidation, setSelectedConsolidation] =
@@ -85,34 +85,32 @@ export default function SynchroDataModal({
   // });
 
   function handleBtnSendTurnstile() {
-    console.log(widgetId);
-    console.log(turnstileToken);
-    // if (widgetId) {
-    //   window.turnstile.execute(widgetId);
-    // }
+    if (!turnstileToken) {
+      return;
+    }
+    handleBtnSend(turnstileToken);
   }
 
   function closeModalTurnstile() {
-      if (widgetId) {
-        window.turnstile.remove(widgetId);
-        setTurnstileToken(undefined);
+    if (widgetId) {
+      window.turnstile.remove(widgetId);
+      setTurnstileToken(undefined);
     }
     closeModal();
   }
 
   const handleTurnstileRef = useCallback((node: HTMLDivElement | null) => {
-    console.log('handle');
     if (!node || !window.turnstile) {
       return;
     }
-    console.log('nie null');
+
     const id = window.turnstile.render(node, {
       // appearance: 'interaction-only',
-      appearance: 'interaction-only',
+      appearance: 'always',
       sitekey: "0x4AAAAAADnVMEtnL2xbb54z",
+      action: "sync-data",
       // execution: "execute",
       callback: (token) => {
-        //console.log(token);
         setTurnstileToken(token);
       },
       

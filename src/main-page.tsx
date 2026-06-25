@@ -254,7 +254,7 @@ export default function MainPage() {
     setIsSynchroDataModalOpen(true);
   }
 
-  function sendDataToDatabaseSheet() {
+  function sendDataToDatabaseSheet(turnstileToken: string) {
     if (!sendingData) {
       setSendingData(true);
       update<DataKeyIDB>(initData.userID, (oldKeyVal) => {
@@ -356,7 +356,7 @@ export default function MainPage() {
             nr: initData.storeID,
             name: initData.storeName,
             country: initData.country,
-          }, initData.consolidation);
+          }, initData.consolidation, turnstileToken);
       }).catch(() => {
         setSendingData(false);
         setSendDataOK(false);
