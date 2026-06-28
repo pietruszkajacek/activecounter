@@ -92,10 +92,12 @@ export default function SynchroDataModal({
   }
 
   function closeModalTurnstile() {
-    if (widgetId) {
+    if (widgetId !== undefined) {
       window.turnstile.remove(widgetId);
-      setTurnstileToken(undefined);
     }
+
+    setWidgetId(undefined);
+    setTurnstileToken(undefined);
     closeModal();
   }
 
